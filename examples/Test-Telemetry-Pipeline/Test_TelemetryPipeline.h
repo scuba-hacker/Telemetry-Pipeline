@@ -23,26 +23,17 @@ class Test_TelemetryPipeline
 
       uint16_t dataLength = strlen(data);
       // 1. Get the head block and populate the buffer with binary payload and set PayloadSize.
-      Serial.println("0");
       BlockHeader blHead = m_TelPipe.getHeadBlockForPopulating(tailDropped);
 
-      Serial.println("1");
-
       uint8_t* buffer = blHead.getBuffer(blockMaxPayload);
-
-      Serial.println("2");
 
       if (dataLength <= blockMaxPayload)
       {
         blHead.setPayloadSize(dataLength);
-      Serial.println("2.1");
         memcpy(buffer,data,dataLength);
-      Serial.println("2.2");
         // 2. Commit the headblock, meaning that the head pointer is moved to the next block.
         bool isPipelineFull=false;
-       Serial.println("2.3");
        m_TelPipe.commitPopulatedHeadBlock(blHead, isPipelineFull);
-       Serial.println("2.4");
       }
       else
       {
@@ -51,7 +42,6 @@ class Test_TelemetryPipeline
 
       uint32_t maxBuffer=0;
       Serial.printf("t=%hu, h=%hu %s",m_TelPipe.getTailBlockIndex(),m_TelPipe.getHeadBlockIndex(),(char*)(m_TelPipe.getEntireBuffer(maxBuffer)));
-      Serial.println("2.5");
       Serial.println();
     }
 
