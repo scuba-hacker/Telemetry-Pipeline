@@ -91,8 +91,9 @@ class Pipeline
     uint16_t getPipelineBlockCount() const { return m_pipelineBlockCount; }
     uint16_t getPipelineMaxBufferMemBytes() const { return m_maxBlockBufferMemoryUsageBytes; }
 
-    uint8_t* getEntireBuffer()
+    uint8_t* getEntireBuffer(uint32_t& size)
     {
+      size = m_size;
       return m_blockBuffer; 
     }
     
@@ -129,10 +130,9 @@ class TelemetryPipeline
     bool init(const uint16_t maxBlockBufferMemoryUsageKB = Pipeline::s_defaultMaxBlockBufferMemoryUsageKB, 
               const uint16_t maxBlockBufferMemoryUsageBytesRemainder = 0);
 
-    uint8_t* getEntireBuffer(uint32& size)
+    uint8_t* getEntireBuffer(uint32_t& size)
     {
-      size = m_pipeline.getPipelineMaxBufferMemBytes();
-      return m_pipeline.getEntireBuffer();
+      return m_pipeline.getEntireBuffer(size);
     }
 
     // 1. When a message is ready for encoding and storing into a Block buffer, this function

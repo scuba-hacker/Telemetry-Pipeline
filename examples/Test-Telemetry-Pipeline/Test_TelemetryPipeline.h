@@ -1,8 +1,6 @@
 #ifndef TEST_TELEMETRY_PIPELINE_H
 #define TEST_TELEMETRY_PIPELINE_H
 
-#include <M5StickCPlus.h>
-
 #include "TelemetryPipeline.h"
 
 char pullBuffer[256];
