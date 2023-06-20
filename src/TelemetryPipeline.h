@@ -5,9 +5,11 @@
 
 class BlockHeader
 {
+  private:
+    static uint16_t s_maxPayloadSize;
+	
   public:
     static const uint16_t s_defaultMaxPayloadSize = 200;
-    static uint16_t s_maxPayloadSize;
 
   private:
     static const uint16_t s_noInitPayloadSize = 0xFFFF;
@@ -18,6 +20,7 @@ class BlockHeader
     static uint8_t s_getNoInitByte() { return s_noInitByte; }
 
     static void s_overrideMaxPayloadSize(const uint16_t newMaxPayloadSize);
+	static uint16_t s_getMaxPayloadSize() { return s_maxPayloadSize; }
 
 private:
     uint16_t       m_PayloadSize;   // in bytes
@@ -163,7 +166,6 @@ class TelemetryPipeline
     uint16_t getMaximumPipelineLength() const { return m_pipeline.getPipelineBlockCount();}
     
     uint32_t getCurrentPayloadId() const { return m_uniquePayloadId; }
-
     uint16_t getHeadBlockIndex() const { return m_headBlockIndex; }
     uint16_t getTailBlockIndex() const { return m_tailBlockIndex; }
 };

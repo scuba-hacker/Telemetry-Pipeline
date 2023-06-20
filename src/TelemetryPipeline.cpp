@@ -48,7 +48,7 @@ bool BlockHeader::setPayloadId(const uint32_t id)
 
 bool BlockHeader::setPayloadSize(const uint16_t newPayloadSize) 
 { 
-  if (newPayloadSize <= BlockHeader::s_maxPayloadSize)
+  if (newPayloadSize <= BlockHeader::s_getMaxPayloadSize())
   {
     m_PayloadSize = newPayloadSize;
     return true;
@@ -120,7 +120,7 @@ bool Pipeline::init(const uint16_t maxBlockBufferMemoryUsageKB,const uint16_t ma
   m_maxBlockBufferMemoryUsageKB = maxBlockBufferMemoryUsageKB;
   m_maxBlockBufferMemoryUsageBytes = m_maxBlockBufferMemoryUsageKB * 1024 + maxBlockBufferMemoryUsageBytesRemainder;
   
-  m_pipelineBlockCount = m_maxBlockBufferMemoryUsageBytes / BlockHeader::s_maxPayloadSize;
+  m_pipelineBlockCount = m_maxBlockBufferMemoryUsageBytes / BlockHeader::s_getMaxPayloadSize();
 
   if (m_blockBuffer)
     free(m_blockBuffer);
@@ -147,7 +147,7 @@ bool Pipeline::init(const uint16_t maxBlockBufferMemoryUsageKB,const uint16_t ma
     return false;
       
   m_size = m_maxBlockBufferMemoryUsageBytes;
-  m_blockLength = BlockHeader::s_maxPayloadSize;
+  m_blockLength = BlockHeader::s_getMaxPayloadSize();
   m_numberOfBlocks = m_pipelineBlockCount;
 
   // initialise all BlockHeaders with buffer pointers
@@ -312,5 +312,5 @@ uint16_t TelemetryPipeline::getPipelineLength() const
   if (m_headBlockIndex >= m_tailBlockIndex)
     return m_headBlockIndex - m_tailBlockIndex;
   else
-    return m_tailBlockIndex + m_pipeline.getPipelineBlockCount() - m_headBlockIndex;
+	return m_pipeline.getPipelineBlockCount() - m_tailBlockIndex + m_headBlockIndex;
 }
