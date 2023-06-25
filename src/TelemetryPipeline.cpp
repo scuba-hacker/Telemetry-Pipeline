@@ -181,15 +181,20 @@ TelemetryPipeline::TelemetryPipeline()
   initialiseMemberVariables(); 
 }
 
-bool TelemetryPipeline::init(const uint16_t maxBlockBufferMemoryUsageKB, const uint16_t maxBlockBufferMemoryUsageBytesRemainder)
+bool TelemetryPipeline::init(long unsigned int (*fn_millis)(void), 
+							const uint16_t maxBlockBufferMemoryUsageKB, 
+							const uint16_t maxBlockBufferMemoryUsageBytesRemainder)
 {
-  initialiseMemberVariables(); 
+  initialiseMemberVariables();
+  m_fn_millis = fn_millis;
+  
   return m_pipeline.init(maxBlockBufferMemoryUsageKB,maxBlockBufferMemoryUsageBytesRemainder);
 }
 
 void TelemetryPipeline::initialiseMemberVariables()
 {
     m_headBlockIndex = m_tailBlockIndex = m_uniquePayloadId = m_pipelineLength = m_longestPipelineLength = 0;
+	m_fn_millis = NULL; 
 }
 
 // 1. When a message is ready for encoding and storing into a Block buffer, this function
@@ -234,6 +239,8 @@ bool TelemetryPipeline::commitPopulatedHeadBlock(BlockHeader head, bool& pipelin
     if(m_headBlockIndex==m_tailBlockIndex)
       advanceTailBlockIndex();  // make space for the next head 
 
+	m_lastHeadCommitTime = m_fn_millis();
+
     return true;
   }
 }
@@ -258,6 +265,7 @@ bool TelemetryPipeline::pullTailBlock(BlockHeader& header)
 void TelemetryPipeline::tailBlockCommitted()
 {
   advanceTailBlockIndex();
+  m_lastTailCommitTime = m_fn_millis();
 }
 
 void TelemetryPipeline::advanceHeadBlockIndex(bool& tailBlockDropped)
@@ -314,3 +322,15 @@ uint16_t TelemetryPipeline::getPipelineLength() const
   else
 	return m_pipeline.getPipelineBlockCount() - m_tailBlockIndex + m_headBlockIndex;
 }
+
+bool TelemetryPipeline::isPipelineDraining() const
+{
+	if (getPipelineLength() == 0)
+		return true;
+	else
+	{
+		// if no tail commits have been performed in the last x milliseconds then not draining
+		return (m_fn_millis() < m_lastTailCommitTime + TelemetryPipeline::s_pipelineNotDrainingPeriod);
+	}
+}
+

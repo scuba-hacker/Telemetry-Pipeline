@@ -106,12 +106,18 @@ class Pipeline
 
 class TelemetryPipeline
 {
+  private:
+	const static uint32_t s_pipelineNotDrainingPeriod = 10000;	// 10 seconds
+	
   private:  
     uint16_t m_headBlockIndex;
     uint16_t m_tailBlockIndex;
     uint32_t m_uniquePayloadId;
     uint16_t m_pipelineLength;
     uint16_t m_longestPipelineLength;
+
+	uint32_t m_lastHeadCommitTime;
+	uint32_t m_lastTailCommitTime;
 
     Pipeline m_pipeline;
     
@@ -124,13 +130,15 @@ class TelemetryPipeline
     bool advanceTailBlockIndex();
 
     void getNextBlockIndex(uint16_t& blockIndex) const;
+	
+	long unsigned int (*m_fn_millis)(void);
 
   public:
     TelemetryPipeline();
 
     void initialiseMemberVariables();
 
-    bool init(const uint16_t maxBlockBufferMemoryUsageKB = Pipeline::s_defaultMaxBlockBufferMemoryUsageKB, 
+    bool init(long unsigned int (*fn_millis)(void), const uint16_t maxBlockBufferMemoryUsageKB = Pipeline::s_defaultMaxBlockBufferMemoryUsageKB, 
               const uint16_t maxBlockBufferMemoryUsageBytesRemainder = 0);
 
     uint8_t* getEntireBuffer(uint32_t& size)
@@ -168,5 +176,7 @@ class TelemetryPipeline
     uint32_t getCurrentPayloadId() const { return m_uniquePayloadId; }
     uint16_t getHeadBlockIndex() const { return m_headBlockIndex; }
     uint16_t getTailBlockIndex() const { return m_tailBlockIndex; }
+	
+	bool isPipelineDraining() const;
 };
 #endif
