@@ -22,10 +22,13 @@ class BlockHeader
     static void s_overrideMaxPayloadSize(const uint16_t newMaxPayloadSize);
 	static uint16_t s_getMaxPayloadSize() { return s_maxPayloadSize; }
 
+
 private:
     uint16_t       m_PayloadSize;   // in bytes
-    uint32_t       m_payloadId;       // ever-incrementing payloadId
+    uint32_t       m_payloadId;     // ever-incrementing payloadId
     uint8_t*       m_buffer;          
+
+	uint16_t	   m_roundedUpPayloadSize;		// to allow for 2/4/8 byte word boundaries
 
   public:
 
@@ -44,13 +47,18 @@ private:
 
     bool setPayloadId(const uint32_t id);
         
-    bool resetPayload();
+    void resetPayload();
+
+	void setRoundedUpPayloadSize(const uint16_t rounded) { m_roundedUpPayloadSize = rounded; }
+
+	uint16_t getRoundedUpPayloadSize() const { return m_roundedUpPayloadSize; }
 
     bool operator==(const BlockHeader& b)
     {
       return (b.m_PayloadSize == m_PayloadSize &&
               b.m_payloadId == m_payloadId &&
-              b.m_buffer == m_buffer);
+              b.m_buffer == m_buffer &&
+			  b.m_roundedUpPayloadSize == m_roundedUpPayloadSize);
     }
   
 //    bool set(const uint32_t id, const uint16_t PayloadSize);

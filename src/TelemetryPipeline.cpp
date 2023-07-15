@@ -12,13 +12,13 @@ void BlockHeader::s_overrideMaxPayloadSize(const uint16_t newMaxPayloadSize)
 }
 
 BlockHeader::BlockHeader(uint8_t* buffer) : 
-    m_payloadId(s_noInitPayloadId), m_PayloadSize(0),m_buffer(buffer)
+    m_payloadId(s_noInitPayloadId), m_PayloadSize(0),m_buffer(buffer),m_roundedUpPayloadSize(0)
 {      
   initBuffer();
 }
 
 BlockHeader::BlockHeader() : 
-    m_payloadId(s_noInitPayloadId),m_PayloadSize(s_noInitPayloadSize), m_buffer(NULL)
+    m_payloadId(s_noInitPayloadId),m_PayloadSize(s_noInitPayloadSize), m_buffer(NULL), m_roundedUpPayloadSize(0)
 {}
 
 void BlockHeader::initBuffer()
@@ -59,34 +59,17 @@ bool BlockHeader::setPayloadSize(const uint16_t newPayloadSize)
   }
 }
 
-bool BlockHeader::resetPayload()
+void BlockHeader::resetPayload()
 {
   m_PayloadSize = 0;
   m_payloadId = 0;
+  m_roundedUpPayloadSize = 0;
+  
   if (m_buffer != NULL)
   {
     initBuffer();
-    return true;
-  }
-  else
-    return false;
-}
-
-/*
-bool BlockHeader::set(const uint32_t id, const uint16_t PayloadSize)
-{  
-  if (id != s_noInitPayloadId && PayloadSize <= s_maxPayloadSize)
-  {
-    m_payloadId = id;
-    m_PayloadSize = PayloadSize;
-    return true;
-  }
-  else
-  {  
-    return false;
   }
 }
-*/
 
 uint8_t* BlockHeader::getBuffer(uint16_t& maxPayloadSize)
 {
