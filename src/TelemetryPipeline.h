@@ -150,7 +150,7 @@ class TelemetryPipeline
     //    is called to get the BlockHeader for that block. The caller then has to
     //      (a) populate the block m_payloadBuffer with the message bytes.
     //      (b) set the block m_PayloadSize.
-    BlockHeader getHeadBlockForPopulating(bool& tailBlockDropped);
+    BlockHeader getHeadBlockForPopulating();
 
     // 2. After the block has been populated with message payload bytes and payload length,
     //    caller commits the BlockHeader. The BlockHeader retrieved from getHeadBlockForPopulating()

@@ -201,23 +201,10 @@ void TelemetryPipeline::initialiseMemberVariables()
 //    is called to get the BlockHeader for that block. The caller then has to
 //      (a) populate the block m_payloadBuffer with the message bytes.
 //      (b) set the block m_PayloadSize.
-BlockHeader TelemetryPipeline::getHeadBlockForPopulating(bool& tailBlockDropped)
+BlockHeader TelemetryPipeline::getHeadBlockForPopulating()
 {
-  tailBlockDropped = false;
-    
   BlockHeader head = m_pipeline[m_headBlockIndex];
   head.resetPayload();
-
-//  if (pipelineFull())
-//  {
-//    getNextBlockIndex(m_tailBlockIndex);  // drop the oldest message
-//    tailBlockDropped = true;
-//  }
-
-
-
-
-
   return head;
 }
 
