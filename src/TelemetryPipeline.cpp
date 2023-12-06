@@ -11,14 +11,14 @@ void BlockHeader::s_overrideMaxPayloadSize(const uint16_t newMaxPayloadSize)
   s_maxPayloadSize = newMaxPayloadSize;
 }
 
-BlockHeader::BlockHeader(uint8_t* buffer) : 
+BlockHeader::BlockHeader(uint8_t* buffer) :
     m_payloadId(s_noInitPayloadId), m_PayloadSize(0),m_buffer(buffer),m_roundedUpPayloadSize(0)
-{      
+{
   initBuffer();
 }
 
-BlockHeader::BlockHeader() : 
-    m_payloadId(s_noInitPayloadId),m_PayloadSize(s_noInitPayloadSize), m_buffer(NULL), m_roundedUpPayloadSize(0)
+BlockHeader::BlockHeader() :
+    m_payloadId(s_noInitPayloadId),m_PayloadSize(s_noInitPayloadSize), m_buffer(nullptr), m_roundedUpPayloadSize(0)
 {}
 
 void BlockHeader::initBuffer()
@@ -30,14 +30,14 @@ bool BlockHeader::isBlockValid() const
 {
   return (m_payloadId != s_noInitPayloadId &&
           m_PayloadSize != s_noInitPayloadSize && m_PayloadSize <= s_maxPayloadSize &&
-          m_buffer != NULL);
-}    
+          m_buffer != nullptr);
+}
 
 bool BlockHeader::setPayloadId(const uint32_t id)
 {
   if (id != s_noInitPayloadId)
   {
-    m_payloadId = id; 
+    m_payloadId = id;
     return true;
   }
   else
@@ -46,8 +46,8 @@ bool BlockHeader::setPayloadId(const uint32_t id)
   }
 }
 
-bool BlockHeader::setPayloadSize(const uint16_t newPayloadSize) 
-{ 
+bool BlockHeader::setPayloadSize(const uint16_t newPayloadSize)
+{
   if (newPayloadSize <= BlockHeader::s_getMaxPayloadSize())
   {
     m_PayloadSize = newPayloadSize;
@@ -64,8 +64,8 @@ void BlockHeader::resetPayload()
   m_PayloadSize = 0;
   m_payloadId = 0;
   m_roundedUpPayloadSize = 0;
-  
-  if (m_buffer != NULL)
+
+  if (m_buffer != nullptr)
   {
     initBuffer();
   }
@@ -81,11 +81,11 @@ uint8_t* BlockHeader::getBuffer(uint16_t& maxPayloadSize)
 
 Pipeline::Pipeline()
 {
-  m_blockBuffer = NULL;
+  m_blockBuffer = nullptr;
   m_size = 0;
   m_numberOfBlocks = 0;
   m_blockLength = 0;
-  m_headers = NULL;
+  m_headers = nullptr;
 
   m_maxBlockBufferMemoryUsageKB = m_maxBlockBufferMemoryUsageBytes = m_pipelineBlockCount = 0;
 }
@@ -102,7 +102,7 @@ bool Pipeline::init(const uint16_t maxBlockBufferMemoryUsageKB,const uint16_t ma
 {
   m_maxBlockBufferMemoryUsageKB = maxBlockBufferMemoryUsageKB;
   m_maxBlockBufferMemoryUsageBytes = m_maxBlockBufferMemoryUsageKB * 1024 + maxBlockBufferMemoryUsageBytesRemainder;
-  
+
   m_pipelineBlockCount = m_maxBlockBufferMemoryUsageBytes / BlockHeader::s_getMaxPayloadSize();
 
   if (m_blockBuffer)
@@ -114,21 +114,21 @@ bool Pipeline::init(const uint16_t maxBlockBufferMemoryUsageKB,const uint16_t ma
   }
 
   m_blockBuffer = (uint8_t*) malloc(m_maxBlockBufferMemoryUsageBytes+1);
-  m_blockBuffer[m_maxBlockBufferMemoryUsageBytes] = NULL;   // allows for println output of buffer when testing (using no embedded NULLs)
+  m_blockBuffer[m_maxBlockBufferMemoryUsageBytes] = 0;   // allows for println output of buffer when testing (using no embedded NULLs)
 
-  if (m_blockBuffer == NULL)
+  if (m_blockBuffer == nullptr)
     return false;
 
   memset(m_blockBuffer,s_noInitPipelineBufferByte,m_maxBlockBufferMemoryUsageBytes);
 
   if (m_headers)
     delete [] m_headers;
-  
+
   m_headers = new BlockHeader[m_pipelineBlockCount];
-  
-  if (m_headers == NULL)
+
+  if (m_headers == nullptr)
     return false;
-      
+
   m_size = m_maxBlockBufferMemoryUsageBytes;
   m_blockLength = BlockHeader::s_getMaxPayloadSize();
   m_numberOfBlocks = m_pipelineBlockCount;
@@ -138,7 +138,7 @@ bool Pipeline::init(const uint16_t maxBlockBufferMemoryUsageKB,const uint16_t ma
   {
     m_headers[i] = BlockHeader(getBlockBuffer(i));
   }
-        
+
   return true;
 }
 
@@ -161,23 +161,23 @@ const BlockHeader& Pipeline::operator[](const uint16_t index) const
 
 TelemetryPipeline::TelemetryPipeline()
 {
-  initialiseMemberVariables(); 
+  initialiseMemberVariables();
 }
 
-bool TelemetryPipeline::init(long unsigned int (*fn_millis)(void), 
-							const uint16_t maxBlockBufferMemoryUsageKB, 
+bool TelemetryPipeline::init(long unsigned int (*fn_millis)(void),
+							const uint16_t maxBlockBufferMemoryUsageKB,
 							const uint16_t maxBlockBufferMemoryUsageBytesRemainder)
 {
   initialiseMemberVariables();
   m_fn_millis = fn_millis;
-  
+
   return m_pipeline.init(maxBlockBufferMemoryUsageKB,maxBlockBufferMemoryUsageBytesRemainder);
 }
 
 void TelemetryPipeline::initialiseMemberVariables()
 {
     m_headBlockIndex = m_tailBlockIndex = m_uniquePayloadId = m_pipelineLength = m_longestPipelineLength = 0;
-	m_fn_millis = NULL; 
+	m_fn_millis = nullptr;
 }
 
 // 1. When a message is ready for encoding and storing into a Block buffer, this function
@@ -195,7 +195,7 @@ BlockHeader TelemetryPipeline::getHeadBlockForPopulating()
 //    caller commits the BlockHeader. The BlockHeader retrieved from getHeadBlockForPopulating()
 //    is turned around and passed back here. The object now has the byte buffer populated and payload length set != 0.
 bool TelemetryPipeline::commitPopulatedHeadBlock(BlockHeader head, bool& pipelineFull )
-{      
+{
   if (head.getPayloadSize() == 0)
   {
     return false;
@@ -205,9 +205,9 @@ bool TelemetryPipeline::commitPopulatedHeadBlock(BlockHeader head, bool& pipelin
     head.setPayloadId(m_uniquePayloadId++);
     m_pipeline[m_headBlockIndex] = head;
     advanceHeadBlockIndex(pipelineFull);
-    
+
     if(m_headBlockIndex==m_tailBlockIndex)
-      advanceTailBlockIndex();  // make space for the next head 
+      advanceTailBlockIndex();  // make space for the next head
 
 	m_lastHeadCommitTime = m_fn_millis();
 
@@ -241,7 +241,7 @@ void TelemetryPipeline::tailBlockCommitted()
 void TelemetryPipeline::advanceHeadBlockIndex(bool& tailBlockDropped)
 {
   tailBlockDropped = false;
-  
+
 //  if (pipelineFull())
 //  {
 //    getNextBlockIndex(m_tailBlockIndex);  // drop the oldest message
@@ -251,7 +251,7 @@ void TelemetryPipeline::advanceHeadBlockIndex(bool& tailBlockDropped)
   getNextBlockIndex(m_headBlockIndex);
 
   m_pipelineLength = getPipelineLength();
-  
+
   if (m_pipelineLength > m_longestPipelineLength)
     m_longestPipelineLength = m_pipelineLength;
 }
@@ -260,9 +260,9 @@ void TelemetryPipeline::advanceHeadBlockIndex(bool& tailBlockDropped)
 bool TelemetryPipeline::advanceTailBlockIndex()
 {
   m_pipeline[m_tailBlockIndex].resetPayload();    // clear the current tail
-  
+
   getNextBlockIndex(m_tailBlockIndex);
-  
+
   m_pipelineLength = getPipelineLength();
 
   return !pipelineEmpty();
@@ -303,4 +303,3 @@ bool TelemetryPipeline::isPipelineDraining() const
 		return (m_fn_millis() < m_lastTailCommitTime + TelemetryPipeline::s_pipelineNotDrainingPeriod);
 	}
 }
-
