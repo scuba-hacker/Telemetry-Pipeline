@@ -7,7 +7,7 @@ class BlockHeader
 {
   private:
     static uint16_t s_maxPayloadSize;
-	
+
   public:
     static const uint16_t s_defaultMaxPayloadSize = 200;
 
@@ -26,16 +26,16 @@ class BlockHeader
 private:
     uint16_t       m_PayloadSize;   // in bytes
     uint32_t       m_payloadId;     // ever-incrementing payloadId
-    uint8_t*       m_buffer;          
+    uint8_t*       m_buffer;
 
 	uint16_t	   m_roundedUpPayloadSize;		// to allow for 2/4/8 byte word boundaries
 
   public:
 
     void initBuffer();
-    
+
     BlockHeader();
-    BlockHeader(uint8_t* buffer); 
+    BlockHeader(uint8_t* buffer);
 
     bool     isBlockValid() const;
 
@@ -46,7 +46,7 @@ private:
     uint16_t getMaxPayloadSize() const { return s_maxPayloadSize; }
 
     bool setPayloadId(const uint32_t id);
-        
+
     void resetPayload();
 
 	void setRoundedUpPayloadSize(const uint16_t rounded) { m_roundedUpPayloadSize = rounded; }
@@ -60,7 +60,7 @@ private:
               b.m_buffer == m_buffer &&
 			  b.m_roundedUpPayloadSize == m_roundedUpPayloadSize);
     }
-  
+
 //    bool set(const uint32_t id, const uint16_t PayloadSize);
 };
 
@@ -87,14 +87,14 @@ class Pipeline
     static const uint8_t s_noInitPipelineBufferByte = 0x24; // $ character
 
     Pipeline(const Pipeline& a) {}
-    Pipeline& operator=(const Pipeline& a) {}
+    Pipeline& operator=(const Pipeline& a) {return *this;}
 
 
-  public:  
+  public:
     Pipeline();
     ~Pipeline();
 
-    bool init(const uint16_t maxBlockBufferMemoryUsageKB = Pipeline::s_defaultMaxBlockBufferMemoryUsageKB, 
+    bool init(const uint16_t maxBlockBufferMemoryUsageKB = Pipeline::s_defaultMaxBlockBufferMemoryUsageKB,
               const uint16_t maxBlockBufferMemoryUsageBytesRemainder = 0);
 
     uint8_t* getBlockBuffer(const uint16_t index);
@@ -105,9 +105,9 @@ class Pipeline
     uint8_t* getEntireBuffer(uint32_t& size)
     {
       size = m_size;
-      return m_blockBuffer; 
+      return m_blockBuffer;
     }
-    
+
     BlockHeader& operator[](const uint16_t index);
     const BlockHeader& operator[](const uint16_t index) const;
 };
@@ -116,8 +116,8 @@ class TelemetryPipeline
 {
   private:
 	const static uint32_t s_pipelineNotDrainingPeriod = 10000;	// 10 seconds
-	
-  private:  
+
+  private:
     uint16_t m_headBlockIndex;
     uint16_t m_tailBlockIndex;
     uint32_t m_uniquePayloadId;
@@ -128,7 +128,7 @@ class TelemetryPipeline
 	uint32_t m_lastTailCommitTime;
 
     Pipeline m_pipeline;
-    
+
     TelemetryPipeline(const TelemetryPipeline& a) {}
     TelemetryPipeline& operator=(const TelemetryPipeline& a) {}
 
@@ -138,7 +138,7 @@ class TelemetryPipeline
     bool advanceTailBlockIndex();
 
     void getNextBlockIndex(uint16_t& blockIndex) const;
-	
+
 	long unsigned int (*m_fn_millis)(void);
 
   public:
@@ -146,7 +146,7 @@ class TelemetryPipeline
 
     void initialiseMemberVariables();
 
-    bool init(long unsigned int (*fn_millis)(void), const uint16_t maxBlockBufferMemoryUsageKB = Pipeline::s_defaultMaxBlockBufferMemoryUsageKB, 
+    bool init(long unsigned int (*fn_millis)(void), const uint16_t maxBlockBufferMemoryUsageKB = Pipeline::s_defaultMaxBlockBufferMemoryUsageKB,
               const uint16_t maxBlockBufferMemoryUsageBytesRemainder = 0);
 
     uint8_t* getEntireBuffer(uint32_t& size)
@@ -174,17 +174,17 @@ class TelemetryPipeline
     // 4. Once the tail block has been successfully uploaded to the internet, the caller must
     //    call this method.
     void tailBlockCommitted();
-    
+
     bool pipelineEmpty() const;
     bool pipelineFull() const;
     uint16_t getPipelineLength() const;
     uint16_t getMaximumDepth() const     { return m_longestPipelineLength; }
     uint16_t getMaximumPipelineLength() const { return m_pipeline.getPipelineBlockCount();}
-    
+
     uint32_t getCurrentPayloadId() const { return m_uniquePayloadId; }
     uint16_t getHeadBlockIndex() const { return m_headBlockIndex; }
     uint16_t getTailBlockIndex() const { return m_tailBlockIndex; }
-	
+
 	bool isPipelineDraining() const;
 };
 #endif
