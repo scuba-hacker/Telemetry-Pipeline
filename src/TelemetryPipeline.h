@@ -130,7 +130,7 @@ class TelemetryPipeline
     Pipeline m_pipeline;
 
     TelemetryPipeline(const TelemetryPipeline& a) {}
-    TelemetryPipeline& operator=(const TelemetryPipeline& a) {}
+    TelemetryPipeline& operator=(const TelemetryPipeline& a) {return *this;}
 
     void advanceHeadBlockIndex(bool& tailBlockDropped);
 
