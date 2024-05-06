@@ -92,10 +92,22 @@ Pipeline::Pipeline()
 
 Pipeline::~Pipeline()
 {
-  if (m_blockBuffer)
-    free(m_blockBuffer);
+  teardown();
+}
 
-  delete [] m_headers;
+void Pipeline::teardown()
+{
+  if (m_blockBuffer)
+  {
+    free(m_blockBuffer);
+    m_blockBuffer=nullptr;
+  }
+
+  if (m_headers)
+  {
+    delete [] m_headers;
+    m_headers=nullptr;
+  }
 }
 
 bool Pipeline::init(const uint16_t maxBlockBufferMemoryUsageKB,const uint16_t maxBlockBufferMemoryUsageBytesRemainder)

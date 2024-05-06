@@ -97,6 +97,8 @@ class Pipeline
     bool init(const uint16_t maxBlockBufferMemoryUsageKB = Pipeline::s_defaultMaxBlockBufferMemoryUsageKB,
               const uint16_t maxBlockBufferMemoryUsageBytesRemainder = 0);
 
+    void teardown();
+
     uint8_t* getBlockBuffer(const uint16_t index);
 
     uint16_t getPipelineBlockCount() const { return m_pipelineBlockCount; }
@@ -148,6 +150,11 @@ class TelemetryPipeline
 
     bool init(long unsigned int (*fn_millis)(void), const uint16_t maxBlockBufferMemoryUsageKB = Pipeline::s_defaultMaxBlockBufferMemoryUsageKB,
               const uint16_t maxBlockBufferMemoryUsageBytesRemainder = 0);
+
+    void teardown()
+    {
+        m_pipeline.teardown();
+    }
 
     uint8_t* getEntireBuffer(uint32_t& size)
     {
