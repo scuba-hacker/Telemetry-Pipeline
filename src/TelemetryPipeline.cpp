@@ -125,6 +125,7 @@ bool Pipeline::init(const uint16_t maxBlockBufferMemoryUsageKB,const uint16_t ma
     return false;
   }
 
+  // Large buffers will automatically be placed in PSRAM by ESP-IDF libraries
   m_blockBuffer = (uint8_t*) malloc(m_maxBlockBufferMemoryUsageBytes+1);
   m_blockBuffer[m_maxBlockBufferMemoryUsageBytes] = 0;   // allows for println output of buffer when testing (using no embedded NULLs)
 
