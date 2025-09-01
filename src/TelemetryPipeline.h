@@ -199,5 +199,6 @@ class TelemetryPipeline
     bool performExtendedDiagnostics()  { return true; }
     bool performDeepSectorValidation()  { return true; }
     bool performPowerLossRecoveryTest()  { return true; }
+    bool performStressTest(uint32_t num_records = 1000)  { return true; }
 };
 #endif
