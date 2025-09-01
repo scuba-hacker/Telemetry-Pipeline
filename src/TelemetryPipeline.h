@@ -200,5 +200,18 @@ class TelemetryPipeline
     bool performDeepSectorValidation()  { return true; }
     bool performPowerLossRecoveryTest()  { return true; }
     bool performStressTest(uint32_t num_records = 1000)  { return true; }
+
+      // Failure injection method stubs (only available in testing builds)
+  #ifdef TESTING_MODE
+  bool injectSectorCorruption(uint32_t sector_index) { return false; } // Stub - not supported
+  bool corruptPersistedState() { return false; } // Stub - not supported
+  bool simulateIncompleteWrite() { return false; } // Stub - not supported
+  bool corruptRingPointers() { return false; } // Stub - not supported
+  bool acceleratedWearTest(uint32_t cycles) { return false; } // Stub - not supported
+  bool injectRandomCorruption(uint32_t num_sectors) { return false; } // Stub - not supported
+  bool simulatePartitionFailure() { return false; } // Stub - not supported
+  bool injectCRCCorruption(uint32_t sector_index) { return false; } // Stub - not supported
+  void enableFailureInjection() {} // Stub - no-op
+  #endif
 };
 #endif
