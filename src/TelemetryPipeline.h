@@ -62,6 +62,14 @@ private:
     }
 
 //    bool set(const uint32_t id, const uint16_t PayloadSize);
+
+// Stub functions 
+
+    bool performPowerOnSelfTest(bool auto_repair = true) { return true; }
+    bool performExtendedDiagnostics()  { return true; }
+    bool performDeepSectorValidation()  { return true; }
+    bool performPowerLossRecoveryTest()  { return true; }
+ 
 };
 
 // 100KB of heap for Pipeline, 512 blocks of 200 bytes.
